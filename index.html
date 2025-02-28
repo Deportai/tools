@@ -275,15 +275,9 @@
             return (Math.random() * 40 - 20).toFixed(1);
         }
 
-        // Wallet Connection (Mock)
+        // Wallet Connection (No Action)
         function connectWallet() {
-            Telegram.WebApp.showPopup({
-                title: 'Connect Wallet',
-                message: 'Authorize your Solana wallet?',
-                buttons: [{ type: 'ok', text: 'Authorize' }]
-            }, () => {
-                Telegram.WebApp.showAlert('Wallet connected! (Mock)');
-            });
+            // Do nothing
         }
 
         // Wallet Voting Logic
