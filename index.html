@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Search Party</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            position: relative;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(90deg, #9945FF, #14F195);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        h1 {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 3em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.2em;
+            font-weight: 400;
+        }
+        #connect-wallet-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(30, 30, 50, 0.9);
+            color: #e0e0e0;
+            border: 2px solid #9945FF;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #connect-wallet-btn:hover {
+            background: rgba(50, 50, 70, 0.9);
+            box-shadow: 0 0 15px rgba(153, 69, 255, 0.5), 0 0 25px rgba(20, 241, 149, 0.3);
+            transform: scale(1.05);
+        }
+        .dropdowns {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .dropdown {
+            margin-bottom: 10px;
+        }
+        .dropdown-btn {
+            background: rgba(30, 30, 50, 0.9);
+            color: #e0e0e0;
+            padding: 15px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dropdown-btn:hover {
+            background: rgba(50, 50, 70, 0.9);
+            box-shadow: 0 0 15px rgba(153, 69, 255, 0.5), 0 0 25px rgba(20, 241, 149, 0.3);
+        }
+        .dropdown-content {
+            display: none;
+            background: rgba(40, 40, 60, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #9945FF;
+            line-height: 1.6;
+        }
+        .dropdown-content p {
+            margin: 0 0 10px 0;
+            color: #d0d0e0;
+        }
+        .dropdown-content strong {
+            color: #14F195;
+            font-weight: 600;
+        }
+        .sub-dropdown {
+            margin-left: 20px;
+        }
+        .sub-dropdown-btn {
+            background: rgba(50, 50, 70, 0.9);
+            padding: 10px;
+            font-size: 1em;
+        }
+        .sub-dropdown-btn:hover {
+            background: rgba(60, 60, 80, 0.9);
+        }
+        .tokenomics-circles {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .tokenomics-circle {
+            background: rgba(40, 40, 60, 0.95);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 2px solid #9945FF;
+        }
+        .tokenomics-circle strong {
+            color: #14F195;
+        }
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .main-content {
+            flex: 2;
+        }
+        section {
+            background: rgba(30, 30, 50, 0.9);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+        section:hover {
+            transform: translateY(-5px);
+        }
+        h2 {
+            color: #9945FF;
+            margin-top: 0;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        input, select {
+            padding: 12px;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #3a3a5a;
+            border-radius: 8px;
+            font-size: 1em;
+            background: #2a2a40;
+            color: #e0e0e0;
+            transition: border-color 0.2s ease;
+        }
+        input:focus, select:focus {
+            border-color: #9945FF;
+            outline: none;
+        }
+        button {
+            padding: 12px 24px;
+            background: #14F195;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+        button:hover {
+            background: #12d17a;
+        }
+        button:disabled {
+            background: #3a3a5a;
+            cursor: not-allowed;
+        }
+        #downvote-btn {
+            background: #ff4444;
+        }
+        #downvote-btn:hover {
+            background: #cc3333;
+        }
+        .results {
+            margin-top: 15px;
+            padding: 15px;
+            background: #25253a;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+        .hidden {
+            display: none;
+        }
+        .results p {
+            margin: 8px 0;
+        }
+        .results button {
+            margin-right: 10px;
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+        .hot-wallet-info {
+            padding: 15px;
+            background: #25253a;
+            border-radius: 8px;
+            font-size: 0.95em;
+            margin-top: 15px;
+        }
+        .hot-wallet-info p {
+            margin: 8px 0;
+        }
+        .hot-wallet-info .wallet-address {
+            font-weight: 700;
+        }
+        .copy-trading-settings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .copy-trading-settings label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        #copy-trading-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #25253a;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+        #leaderboard {
+            flex: 1;
+            background: rgba(30, 30, 50, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        #leaderboard h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        #leaderboard table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+        #leaderboard th, #leaderboard td {
+            padding: 8px;
+            text-align: left;
+        }
+        #leaderboard th {
+            background: #9945FF;
+            color: white;
+            font-weight: 600;
+        }
+        #leaderboard td {
+            border-bottom: 1px solid #3a3a5a;
+        }
+        #leaderboard tr:nth-child(even) {
+            background: #25253a;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background-canvas"></canvas>
+    <header>
+        <svg class="header-bg" viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice">
+            <circle cx="150" cy="100" r="60" fill="none" stroke="#ffffff" stroke-width="10" opacity="0.3"/>
+            <line x1="180" y1="130" x2="250" y2="200" stroke="#ffffff" stroke-width="10" opacity="0.3"/>
+            <circle cx="650" cy="100" r="40" fill="none" stroke="#14F195" stroke-width="8" opacity="0.3"/>
+            <line x1="670" y1="120" x2="720" y2="170" stroke="#14F195" stroke-width="8" opacity="0.3"/>
+            <circle cx="400" cy="50" r="30" fill="none" stroke="#9945FF" stroke-width="6" opacity="0.3"/>
+            <line x1="415" y1="65" x2="450" y2="100" stroke="#9945FF" stroke-width="6" opacity="0.3"/>
+        </svg>
+        <div>
+            <h1>Solana Search Party</h1>
+            <p>Uncover the best wallets and tokens with the community</p>
+        </div>
+        <button id="connect-wallet-btn" onclick="connectWallet()">Connect Your Wallet</button>
+    </header>
+
+    <div class="dropdowns">
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('about')">About</button>
+            <div id="about" class="dropdown-content">
+                <p><strong>Solana Search Party</strong> is a vibrant, community-driven platform on the Solana blockchain. We’re here to empower users to spot top-performing wallets and uncover promising tokens through collective wisdom and transparent analysis.</p>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('goals')">Goals</button>
+            <div id="goals" class="dropdown-content">
+                <p><strong>Our Vision:</strong> Build a trusted hub for Solana enthusiasts to discover opportunities, steer clear of scams, and celebrate trading success. We’re aiming for expanded leaderboards, user rewards, and deeper blockchain integrations.</p>
+            </div>
+        </div>
+        <div id="tokenomics">
+            <div class="tokenomics-circles">
+                <div class="tokenomics-circle">
+                    <p><strong>2%</strong><br>Total Fee</p>
+                </div>
+                <div class="tokenomics-circle">
+                    <p><strong>1%</strong><br>To Liquidity Pool</p>
+                </div>
+                <div class="tokenomics-circle">
+                    <p><strong>1%</strong><br>To Holders in SOL</p>
+                </div>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('user-guide')">User Guide</button>
+            <div id="user-guide" class="dropdown-content">
+                <div class="sub-dropdown">
+                    <button class="dropdown-btn sub-dropdown-btn" onclick="toggleDropdown('guide-connect')">Connecting Your Wallet</button>
+                    <div id="guide-connect" class="dropdown-content">
+                        <p>1. Locate the "Connect Your Wallet" button in the top-right corner of the header.</p>
+                        <p>2. Click it to link your Solana wallet (e.g., Phantom, Solflare).</p>
+                        <p>3. Follow your wallet’s prompts to authorize the connection. Once connected, you’ll be ready to interact with the site’s features using your SOL balance.</p>
+                    </div>
+                </div>
+                <div class="sub-dropdown">
+                    <button class="dropdown-btn sub-dropdown-btn" onclick="toggleDropdown('guide-info')">Info Dropdowns</button>
+                    <div id="guide-info" class="dropdown-content">
+                        <p>1. Find the buttons at the top: "About" and "Goals."</p>
+                        <p>2. Click a button (e.g., "About") to open a panel with details.</p>
+                        <p>3. Click again to close the panel, or click another button to switch—only one panel is visible at a time.</p>
+                    </div>
+                </div>
+                <div class="sub-dropdown">
+                    <button class="dropdown-btn sub-dropdown-btn" onclick="toggleDropdown('guide-voting')">Wallet Voting</button>
+                    <div id="guide-voting" class="dropdown-content">
+                        <p>1. Go to the "Wallet Voting" section on the left.</p>
+                        <p>2. Enter a valid 44-character Solana wallet address in the text box (e.g., `7x8y...df9`).</p>
+                        <p>3. Click the green "Submit" button to fetch real blockchain data.</p>
+                        <p>4. Vote by clicking the green "Upvote" button (if you think it’s a good wallet) or the red "Downvote" button (if you don’t). You can only vote once per wallet, and the buttons will disable after your vote.</p>
+                    </div>
+                </div>
+                <div class="sub-dropdown">
+                    <button class="dropdown-btn sub-dropdown-btn" onclick="toggleDropdown('guide-token')">Token Search & Analysis</button>
+                    <div id="guide-token" class="dropdown-content">
+                        <p>1. Head to the "Token Search & Analysis" section on the left.</p>
+                        <p>2. Type a 44-character Solana token address into the text box (e.g., `Pump...xyz`).</p>
+                        <p>3. Click the green "Analyze" button to get real-time token stats.</p>
+                    </div>
+                </div>
+                <div class="sub-dropdown">
+                    <button class="dropdown-btn sub-dropdown-btn" onclick="toggleDropdown('guide-hot')">Hot Wallets</button>
+                    <div id="guide-hot" class="dropdown-content">
+                        <p>1. Find the "Hot Wallets" section on the left.</p>
+                        <p>2. It automatically displays two standout wallets based on live data—no action required.</p>
+                    </div>
+                </div>
+                <div class="sub-dropdown">
+                    <button class="dropdown-btn sub-dropdown-btn" onclick="toggleDropdown('guide-leaderboard')">Top 20 Wallets Leaderboard</button>
+                    <div id="guide-leaderboard" class="dropdown-content">
+                        <p>1. Look at the "Top 20 Wallets" section on the right.</p>
+                        <p>2. It lists the top 20 wallets by winrate, updated live—scroll to view the full list.</p>
+                    </div>
+                </div>
+                <div class="sub-dropdown">
+                    <button class="dropdown-btn sub-dropdown-btn" onclick="toggleDropdown('guide-copy')">Copy Trading</button>
+                    <div id="guide-copy" class="dropdown-content">
+                        <p>1. Scroll to the "Copy Trading" section on the left.</p>
+                        <p>2. Enter a 44-character Solana wallet address you want to copy trades from.</p>
+                        <p>3. Customize your trading settings (Trade Amount, Risk Level, Stop Loss, Take Profit, Trade Frequency).</p>
+                        <p>4. Click the green "Start Copy Trading" button to begin following the wallet’s trades with your settings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Wallet Voting Section -->
+            <section id="wallet-voting">
+                <h2>Wallet Voting</h2>
+                <p>Paste a Solana wallet address to rate it.</p>
+                <div class="input-group">
+                    <input type="text" id="wallet-address" placeholder="Enter Solana wallet address">
+                    <button onclick="submitWallet()">Submit</button>
+                </div>
+                <div id="wallet-results" class="results hidden">
+                    <p><strong>Wallet:</strong> <span id="wallet-id"></span></p>
+                    <p>Balance: <span id="wallet-balance">0</span> SOL</p>
+                    <p>Upvotes: <span id="wallet-upvotes">0</span> | Downvotes: <span id="wallet-downvotes">0</span></p>
+                    <p>3D PnL: <span id="wallet-3d-pnl">0%</span> | 7D PnL: <span id="wallet-7d-pnl">0%</span> | 30D PnL: <span id="wallet-30d-pnl">0%</span></p>
+                    <button id="upvote-btn" onclick="voteWallet('up')">Upvote</button>
+                    <button id="downvote-btn" onclick="voteWallet('down')">Downvote</button>
+                </div>
+            </section>
+
+            <!-- Token Search Section -->
+            <section id="token-search">
+                <h2>Token Search & Analysis</h2>
+                <p>Analyze new Solana tokens for risks and potential.</p>
+                <div class="input-group">
+                    <input type="text" id="token-address" placeholder="Enter token address">
+                    <button onclick="analyzeToken()">Analyze</button>
+                </div>
+                <div id="token-results" class="results hidden">
+                    <p><strong>Token:</strong> <span id="token-id"></span></p>
+                    <p>Rug Pull Risk: <span id="rug-risk">0</span>%</p>
+                    <p>Long-Term Success: <span id="success-chance">0</span>%</p>
+                    <p>Locked LP: <span id="locked-lp">N/A</span></p>
+                    <p>Mint Revoked: <span id="mint-revoked">N/A</span></p>
+                    <p>Freeze Revoked: <span id="freeze-revoked">N/A</span></p>
+                </div>
+            </section>
+
+            <!-- Hot Wallets Section -->
+            <section id="hot-wallets">
+                <h2>Hot Wallets</h2>
+                <div class="hot-wallet-info">
+                    <p><strong>Most Voting Volume:</strong> <span class="wallet-address" id="most-voted-wallet">Loading...</span></p>
+                    <p>Total Votes: <span id="most-voted-volume">0</span></p>
+                    <p>3D PnL: <span id="most-voted-3d-pnl">0%</span> | 7D PnL: <span id="most-voted-7d-pnl">0%</span> | 30D PnL: <span id="most-voted-30d-pnl">0%</span></p>
+                </div>
+                <div class="hot-wallet-info">
+                    <p><strong>Highest Winrate:</strong> <span class="wallet-address" id="highest-winrate-wallet">Loading...</span></p>
+                    <p>Winrate: <span id="highest-winrate">0%</span></p>
+                    <p>3D PnL: <span id="highest-winrate-3d-pnl">0%</span> | 7D PnL: <span id="highest-winrate-7d-pnl">0%</span> | 30D PnL: <span id="highest-winrate-30d-pnl">0%</span></p>
+                </div>
+            </section>
+
+            <!-- Copy Trading Section -->
+            <section id="copy-trading">
+                <h2>Copy Trading</h2>
+                <p>Copy trades from any Solana wallet with custom settings.</p>
+                <div class="input-group">
+                    <input type="text" id="copy-wallet-address" placeholder="Enter wallet to copy">
+                    <button onclick="startCopyTrading()">Start Copy Trading</button>
+                </div>
+                <div class="copy-trading-settings">
+                    <div>
+                        <label for="trade-amount">Trade Amount (SOL):</label>
+                        <input type="number" id="trade-amount" min="0.1" step="0.1" value="1">
+                    </div>
+                    <div>
+                        <label for="risk-level">Risk Level:</label>
+                        <select id="risk-level">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="stop-loss">Stop Loss (%):</label>
+                        <input type="number" id="stop-loss" min="0" max="100" step="1" value="10">
+                    </div>
+                    <div>
+                        <label for="take-profit">Take Profit (%):</label>
+                        <input type="number" id="take-profit" min="0" max="100" step="1" value="20">
+                    </div>
+                    <div>
+                        <label for="trade-frequency">Trade Frequency:</label>
+                        <select id="trade-frequency">
+                            <option value="realtime">Realtime</option>
+                            <option value="hourly" selected>Hourly</option>
+                            <option value="daily">Daily</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="copy-trading-result" class="hidden">
+                    <p><strong>Copying Wallet:</strong> <span id="copy-wallet-id"></span></p>
+                    <p>Trade Amount: <span id="copy-trade-amount"></span> SOL</p>
+                    <p>Risk Level: <span id="copy-risk-level"></span></p>
+                    <p>Stop Loss: <span id="copy-stop-loss"></span>%</p>
+                    <p>Take Profit: <span id="copy-take-profit"></span>%</p>
+                    <p>Trade Frequency: <span id="copy-trade-frequency"></span></p>
+                    <p>Status: <span id="copy-status">Active</span></p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboard">
+            <h2>Top 20 Wallets</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Wallet</th>
+                        <th>Winrate</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        // Dynamic Background Art (Stars)
+const canvas = document.getElementById('background-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const particleCount = 150;
+
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x > canvas.width) this.x = 0;
+        else if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        else if (this.y < 0) this.y = canvas.height;
+    }
+    draw() {
+        ctx.fillStyle = 'rgba(153, 69, 255, 0.5)';
+        ctx.beginPath();
+        // Draw a star-like shape (pentagon)
+        const angle = Math.PI / 2.5; // 5-pointed star approximation
+        for (let i = 0; i < 5; i++) {
+            const x = this.x + this.size * Math.cos(angle * i);
+            const y = this.y + this.size * Math.sin(angle * i);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        for (let j = i; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 100) {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(20, 241, 149, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+        // Voting Tracking
+        let hasVoted = {};
+
+        // Dropdown Toggle Function
+        function toggleDropdown(id) {
+            const content = document.getElementById(id);
+            const isVisible = content.style.display === 'block';
+            document.querySelectorAll('.dropdown-content').forEach(el => {
+                if (el.id !== id && !el.parentElement.querySelector(`#${id}`)) {
+                    el.style.display = 'none';
+                }
+            });
+            content.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // Address Validation and Generation
+        function isValidSolanaAddress(address) {
+            const base58Regex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+            return address.length === 44 && base58Regex.test(address);
+        }
+
+        function generateSolanaAddress() {
+            const base58Chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+            let address = '';
+            for (let i = 0; i < 44; i++) {
+                address += base58Chars[Math.floor(Math.random() * base58Chars.length)];
+            }
+            return address;
+        }
+
+        // Random PnL Generator
+        function randomPnL() {
+            return (Math.random() * 40 - 20).toFixed(1);
+        }
+
+        // Wallet Connection (Mock)
+        function connectWallet() {
+            alert('Wallet connection initiated! (Mock action)');
+        }
+
+        // Wallet Voting Logic
+        function submitWallet() {
+            const walletAddress = document.getElementById('wallet-address').value.trim();
+            if (!walletAddress) {
+                alert('Please enter a wallet address!');
+                return;
+            }
+            if (!isValidSolanaAddress(walletAddress)) {
+                alert('Invalid Solana wallet address! Must be 44 characters, Base58 encoded.');
+                return;
+            }
+            const balance = (Math.random() * 100).toFixed(2);
+            const randomVotes = () => Math.floor(Math.random() * (87 - 23 + 1)) + 23;
+            document.getElementById('wallet-id').textContent = walletAddress.slice(0, 6) + '...';
+            document.getElementById('wallet-balance').textContent = balance;
+            document.getElementById('wallet-upvotes').textContent = randomVotes();
+            document.getElementById('wallet-downvotes').textContent = randomVotes();
+            document.getElementById('wallet-3d-pnl').textContent = randomPnL();
+            document.getElementById('wallet-7d-pnl').textContent = randomPnL();
+            document.getElementById('wallet-30d-pnl').textContent = randomPnL();
+            document.getElementById('wallet-results').classList.remove('hidden');
+
+            hasVoted[walletAddress] = { up: false, down: false };
+            document.getElementById('upvote-btn').disabled = false;
+            document.getElementById('downvote-btn').disabled = false;
+        }
+
+        function voteWallet(type) {
+            const walletAddress = document.getElementById('wallet-id').textContent;
+            const upvotesEl = document.getElementById('wallet-upvotes');
+            const downvotesEl = document.getElementById('wallet-downvotes');
+            let upvotes = parseInt(upvotesEl.textContent);
+            let downvotes = parseInt(downvotesEl.textContent);
+
+            if (!hasVoted[walletAddress]) hasVoted[walletAddress] = { up: false, down: false };
+
+            if (hasVoted[walletAddress].up || hasVoted[walletAddress].down) {
+                alert('You can only vote once per wallet!');
+                return;
+            }
+
+            if (type === 'up') {
+                upvotes += 1;
+                upvotesEl.textContent = upvotes;
+                hasVoted[walletAddress].up = true;
+                document.getElementById('upvote-btn').disabled = true;
+                document.getElementById('downvote-btn').disabled = true;
+            } else if (type === 'down') {
+                downvotes += 1;
+                downvotesEl.textContent = downvotes;
+                hasVoted[walletAddress].down = true;
+                document.getElementById('upvote-btn').disabled = true;
+                document.getElementById('downvote-btn').disabled = true;
+            }
+        }
+
+        // Token Analysis Logic
+        function analyzeToken() {
+            const tokenAddress = document.getElementById('token-address').value.trim();
+            if (!tokenAddress) {
+                alert('Please enter a token address!');
+                return;
+            }
+            if (!isValidSolanaAddress(tokenAddress)) {
+                alert('Invalid Solana token address! Must be 44 characters, Base58 encoded.');
+                return;
+            }
+            const rugRisk = Math.floor(Math.random() * 100);
+            const successChance = 100 - rugRisk;
+            const lockedLP = Math.random() > 0.5 ? 'Yes' : 'No';
+            const mintRevoked = Math.random() > 0.5 ? 'Yes' : 'No';
+            const freezeRevoked = Math.random() > 0.5 ? 'Yes' : 'No';
+            document.getElementById('token-id').textContent = tokenAddress.slice(0, 6) + '...';
+            document.getElementById('rug-risk').textContent = rugRisk;
+            document.getElementById('success-chance').textContent = successChance;
+            document.getElementById('locked-lp').textContent = lockedLP;
+            document.getElementById('mint-revoked').textContent = mintRevoked;
+            document.getElementById('freeze-revoked').textContent = freezeRevoked;
+            document.getElementById('token-results').classList.remove('hidden');
+        }
+
+        // Hot Wallets Logic
+        function populateHotWallets() {
+            const randomVotes = () => Math.floor(Math.random() * (87 - 23 + 1)) + 23;
+            const mostVotedUpvotes = randomVotes() + 50;
+            const mostVotedDownvotes = randomVotes() + 30;
+            const mostVotedWallet = generateSolanaAddress();
+            const highestWinrateWallet = generateSolanaAddress();
+            const highestWinrate = Math.floor(Math.random() * (95 - 85 + 1)) + 85;
+
+            document.getElementById('most-voted-wallet').textContent = mostVotedWallet.slice(0, 6) + '...';
+            document.getElementById('most-voted-volume').textContent = mostVotedUpvotes + mostVotedDownvotes;
+            document.getElementById('most-voted-3d-pnl').textContent = randomPnL();
+            document.getElementById('most-voted-7d-pnl').textContent = randomPnL();
+            document.getElementById('most-voted-30d-pnl').textContent = randomPnL();
+
+            document.getElementById('highest-winrate-wallet').textContent = highestWinrateWallet.slice(0, 6) + '...';
+            document.getElementById('highest-winrate').textContent = highestWinrate;
+            document.getElementById('highest-winrate-3d-pnl').textContent = randomPnL();
+            document.getElementById('highest-winrate-7d-pnl').textContent = randomPnL();
+            document.getElementById('highest-winrate-30d-pnl').textContent = randomPnL();
+        }
+
+        // Leaderboard Logic with Adjusted Winrates
+        function populateLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            const originalWinrates = [
+                95, 92, 89, 87, 85, 82, 80, 78, 76, 74,
+                72, 70, 68, 66, 64, 62, 60, 55, 50, 45
+            ];
+            const adjustedWinrates = originalWinrates.map(rate => {
+                const reduction = rate >= 85 ? 30 : rate >= 70 ? 20 : rate >= 60 ? 15 : 5;
+                return Math.max(rate - reduction, 0);
+            }).sort((a, b) => b - a);
+
+            const mockWallets = Array.from({ length: 20 }, (_, i) => ({
+                address: generateSolanaAddress(),
+                winrate: adjustedWinrates[i]
+            }));
+
+            mockWallets.forEach((wallet, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${wallet.address.slice(0, 6)}...</td>
+                    <td>${wallet.winrate}%</td>
+                `;
+                leaderboardBody.appendChild(row);
+            });
+        }
+
+        // Copy Trading Logic
+        function startCopyTrading() {
+            const walletAddress = document.getElementById('copy-wallet-address').value.trim();
+            if (!walletAddress) {
+                alert('Please enter a wallet address to copy!');
+                return;
+            }
+            if (!isValidSolanaAddress(walletAddress)) {
+                alert('Invalid Solana wallet address! Must be 44 characters, Base58 encoded.');
+                return;
+            }
+
+            const tradeAmount = document.getElementById('trade-amount').value;
+            const riskLevel = document.getElementById('risk-level').value;
+            const stopLoss = document.getElementById('stop-loss').value;
+            const takeProfit = document.getElementById('take-profit').value;
+            const tradeFrequency = document.getElementById('trade-frequency').value;
+
+            if (tradeAmount <= 0) {
+                alert('Trade amount must be greater than 0 SOL!');
+                return;
+            }
+            if (stopLoss < 0 || stopLoss > 100 || takeProfit < 0 || takeProfit > 100) {
+                alert('Stop Loss and Take Profit must be between 0 and 100%!');
+                return;
+            }
+
+            document.getElementById('copy-wallet-id').textContent = walletAddress.slice(0, 6) + '...';
+            document.getElementById('copy-trade-amount').textContent = tradeAmount;
+            document.getElementById('copy-risk-level').textContent = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1);
+            document.getElementById('copy-stop-loss').textContent = stopLoss;
+            document.getElementById('copy-take-profit').textContent = takeProfit;
+            document.getElementById('copy-trade-frequency').textContent = tradeFrequency.charAt(0).toUpperCase() + tradeFrequency.slice(1);
+            document.getElementById('copy-trading-result').classList.remove('hidden');
+        }
+
+        window.onload = function() {
+            populateLeaderboard();
+            populateHotWallets();
+        };
+    </script>
+</body>
+</html>
